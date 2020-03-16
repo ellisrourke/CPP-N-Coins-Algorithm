@@ -1,47 +1,26 @@
 #include <iostream>
 #include <vector>
-#include<numeric>
-
-
-
-
-int calculateChange(int &n,std::vector<int>&availableCoins, std::vector<int>&usedCoins,int &up, int &low,std::vector<std::vector<int>> solutions){
-    if((std::accumulate(usedCoins.begin(),usedCoins.end(),0) == n) and low <usedCoins.size() > up) {
-        solutions.emplace_back(usedCoins);
-        return 1;
-        }
-    else if (usedCoins.size() > up){
+int countWays(std::vector<int> &coins,int index, int n, int lowerLimit,int upperLimit,int recursiveDepth){
+    if(n == 0){
+        if((recursiveDepth + coins[index-1]) <= 0 && recursiveDepth + lowerLimit >= index-1){
+            return 1;
+        } else
+            return 0;
+    }
+    else if(n < 0){
         return 0;
     }
-    else if((std::accumulate(usedCoins.begin(),usedCoins.end(),0) == n) > n){
+    else if(index == coins.size() && n > 0){
         return 0;
     }
-    else if(availableCoins.empty()){
-        return 0;
-    }
-    int combinations = 0;
-
-        std::vector<int>usedCoinsCopy(usedCoins);
-        usedCoinsCopy.push_back(availableCoins[0]);
-        combinations += calculateChange(n,availableCoins,usedCoinsCopy,low,up,solutions);
-        availableCoins = std::vector<int>(availableCoins.begin()+1,availableCoins.end());
-        combinations += calculateChange(n,availableCoins,usedCoins,low,up,solutions);
-        return combinations;
+    return countWays(coins, index, n - coins[index],lowerLimit,upperLimit,recursiveDepth-1) + countWays(coins, index + 1, n,lowerLimit,upperLimit,recursiveDepth-1);
 
 }
 int main() {
-int n = 5;
-int lowerLimit = 0;
-int upperLimit = 10;
-std::vector<int> coins = {1,2,3,5,7};
-std::vector<int> usedCoins = {};
-std::vector<std::vector<int>> solutions;
-std::cout << calculateChange(n,coins,usedCoins,lowerLimit,upperLimit,solutions);
-/*
-for(int i=0;i<solutions.size();i++){
-    for(int j=0;j<solutions[i].size();j++){
-        std::cout << solutions[i][j] << " ";
-    } std::cout << std::endl;
-}
- */
+    std::vector<int> coins = {1,2,3,5,7};
+    int index = 0;
+    int n = 8;
+    int lowerLimit = 5;
+    int upperLimit = 5;
+    std::cout << countWays(coins,index,n,lowerLimit,upperLimit,upperLimit) << " ways to make change" << std::endl;
 }
